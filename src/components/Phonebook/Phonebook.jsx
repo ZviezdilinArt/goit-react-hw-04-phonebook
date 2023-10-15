@@ -1,65 +1,78 @@
+import { useState } from 'react';
 import { Button, Label, Wrapper } from './Phonebook.styled';
-import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-export class Phonebook extends Component {
-  state = {
-    name: '',
-    number: '',
-  };
-  handleOnChange = ({ target }) => {
-    this.setState({ [target.name]: target.value, [target.name]: target.value });
-  };
-  handleOnSubmit = event => {
-    const { onSubmit } = this.props;
-    event.preventDefault();
-    onSubmit(this.state);
-    this.reset();
-  };
+export const Phonebook = ({ onSubmit, data }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  reset = () => {
-    this.setState({ name: '', number: '' });
+  // state = {
+  //   name: '',
+  //   number: '',
+  // };
+ const handleOnChange = ({ target: { name, value } }) => {
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'number':
+        setNumber(value);
+        break;
+      default:
+        throw new Error();
+    }
+    // this.setState({ [target.name]: target.value, [target.name]: target.value });
   };
-  render() {
-    this.propTypes = {
-      [this.props.data]: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string.isRequired,
-        })
-      ),
-      [this.props.onSubmit]: PropTypes.func,
-    };
-    return (
-      <Wrapper>
-        <form onSubmit={this.handleOnSubmit}>
-          <Label>
-            <span>Name</span>
-            <input
-              type="text"
-              name="name"
-              value={this.state.name}
-              pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-              onChange={this.handleOnChange}
-            />
-          </Label>
-          <Label>
-            <span>Number</span>
-            <input
-              type="tel"
-              name="number"
-              value={this.state.number}
-              pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-              required
-              onChange={this.handleOnChange}
-            />
-          </Label>
+ const handleOnSubmit = event => {
+   event.preventDefault();
+   onSubmit({ name, number });
+   reset();
+ };
 
-          <Button type="submit">Add contact</Button>
-        </form>
-      </Wrapper>
-    );
-  }
-}
+  const reset = () => {
+    setName('');
+    setNumber('')
+    // this.setState({ name: '', number: '' });
+  };
+  return (
+    <Wrapper>
+      <form onSubmit={handleOnSubmit}>
+        <Label>
+          <span>Name</span>
+          <input
+            type="text"
+            name="name"
+            value={name}
+            pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+            required
+            onChange={handleOnChange}
+          />
+        </Label>
+        <Label>
+          <span>Number</span>
+          <input
+            type="tel"
+            name="number"
+            value={number}
+            pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
+            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+            required
+            onChange={handleOnChange}
+          />
+        </Label>
+
+        <Button type="submit">Add contact</Button>
+      </form>
+    </Wrapper>
+  );
+};
+
+  Phonebook.propTypes = {
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+      })
+    ),
+    onSubmit: PropTypes.func,
+  };
